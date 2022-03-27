@@ -59,7 +59,14 @@
 									{
 										"name": "Copy Incremental Data",
 										"type": "Copy",
-										"dependsOn": [],
+										"dependsOn": [
+											{
+												"activity": "current_date_time",
+												"dependencyConditions": [
+													"Succeeded"
+												]
+											}
+										],
 										"policy": {
 											"timeout": "7.00:00:00",
 											"retry": 0,
@@ -72,7 +79,7 @@
 											"source": {
 												"type": "AzureSqlSource",
 												"sqlReaderQuery": {
-													"value": "select * from @{item().SCHEMA_NAME}.@{item().TABLE_NAME} where @{formatDateTime(item().WATER_MARK_COLUMN,'yyyy-MM-dd HH:mm:ss')} > @{formatDateTime(item().DATA_FETCHED_TILL_TIMESTAMP, 'yyyy-MM-dd HH:mm:ss')} ",
+													"value": "select * from @{item().SCHEMA_NAME}.@{item().TABLE_NAME} where @{item().WATER_MARK_COLUMN} > @{concat('''',item().DATA_FETCHED_TILL_TIMESTAMP, '''')}  and @{item().WATER_MARK_COLUMN} <= @{variables('current_get_time')}",
 													"type": "Expression"
 												},
 												"queryTimeout": "02:00:00",
@@ -121,6 +128,69 @@
 												}
 											}
 										]
+									},
+									{
+										"name": "current_date_time",
+										"type": "SetVariable",
+										"dependsOn": [],
+										"userProperties": [],
+										"typeProperties": {
+											"variableName": "current_get_time",
+											"value": {
+												"value": "@formatDateTime(utcnow(), 'yyyy-MM-ddTHHmmss')",
+												"type": "Expression"
+											}
+										}
+									},
+									{
+										"name": "update_water_mark_column",
+										"type": "SqlServerStoredProcedure",
+										"dependsOn": [
+											{
+												"activity": "Copy Incremental Data",
+												"dependencyConditions": [
+													"Succeeded"
+												]
+											}
+										],
+										"policy": {
+											"timeout": "7.00:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"storedProcedureName": "[dbo].[usp_update_watermark_datetime]",
+											"storedProcedureParameters": {
+												"schemaName": {
+													"value": {
+														"value": "@{item().SCHEMA_NAME}",
+														"type": "Expression"
+													},
+													"type": "String"
+												},
+												"tableName": {
+													"value": {
+														"value": "@{item().TABLE_NAME}",
+														"type": "Expression"
+													},
+													"type": "String"
+												},
+												"watermarkValueToBeUpdated": {
+													"value": {
+														"value": "@variables('current_get_time')",
+														"type": "Expression"
+													},
+													"type": "DateTime"
+												}
+											}
+										},
+										"linkedServiceName": {
+											"referenceName": "LS_metadataDB",
+											"type": "LinkedServiceReference"
+										}
 									}
 								],
 								"ifTrueActivities": [
@@ -242,6 +312,11 @@
 				}
 			}
 		],
+		"variables": {
+			"current_get_time": {
+				"type": "String"
+			}
+		},
 		"annotations": []
 	}
 }
