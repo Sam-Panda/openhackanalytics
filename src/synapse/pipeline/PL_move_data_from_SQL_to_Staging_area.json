@@ -55,11 +55,86 @@
 									"value": "@bool(item().FULLOAD)",
 									"type": "Expression"
 								},
+								"ifFalseActivities": [
+									{
+										"name": "Copy Incremental Data",
+										"type": "Copy",
+										"dependsOn": [],
+										"policy": {
+											"timeout": "7.00:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"source": {
+												"type": "AzureSqlSource",
+												"sqlReaderQuery": {
+													"value": "select * from @{item().SCHEMA_NAME}.@{item().TABLE_NAME} where @{item().WATER_MARK_COLUMN} > @{item().DATA_FETCHED_TILL_TIMESTAMP} and @{item().WATER_MARK_COLUMN} >= formatDateTime((utcnow(),'yyyy-MM-ddTHHmmss')}",
+													"type": "Expression"
+												},
+												"queryTimeout": "02:00:00",
+												"partitionOption": "None"
+											},
+											"sink": {
+												"type": "DelimitedTextSink",
+												"storeSettings": {
+													"type": "AzureBlobStorageWriteSettings"
+												},
+												"formatSettings": {
+													"type": "DelimitedTextWriteSettings",
+													"quoteAllText": true,
+													"fileExtension": ".txt"
+												}
+											},
+											"enableStaging": false,
+											"translator": {
+												"type": "TabularTranslator",
+												"typeConversion": true,
+												"typeConversionSettings": {
+													"allowDataTruncation": true,
+													"treatBooleanAsNumber": false
+												}
+											}
+										},
+										"inputs": [
+											{
+												"referenceName": "DS_source_Opnhckdasqldb",
+												"type": "DatasetReference"
+											}
+										],
+										"outputs": [
+											{
+												"referenceName": "DS_staging_csv",
+												"type": "DatasetReference",
+												"parameters": {
+													"directoryname": {
+														"value": "@{item().SCHEMA_NAME}.@{item().TABLE_NAME}",
+														"type": "Expression"
+													},
+													"filename": {
+														"value": "@concat('Incremental_copy_',formatDateTime(convertTimeZone(utcnow(),'UTC','India Standard Time'),'yyyy-MM-ddTHHmmss'), '.csv')",
+														"type": "Expression"
+													}
+												}
+											}
+										]
+									}
+								],
 								"ifTrueActivities": [
 									{
 										"name": "Copy Full Data",
 										"type": "Copy",
-										"dependsOn": [],
+										"dependsOn": [
+											{
+												"activity": "Delete Previously Existing Files",
+												"dependencyConditions": [
+													"Succeeded"
+												]
+											}
+										],
 										"policy": {
 											"timeout": "7.00:00:00",
 											"retry": 0,
@@ -121,6 +196,44 @@
 												}
 											}
 										]
+									},
+									{
+										"name": "Delete Previously Existing Files",
+										"type": "Delete",
+										"dependsOn": [],
+										"policy": {
+											"timeout": "7.00:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"dataset": {
+												"referenceName": "DS_Blob_Storage_delete_staging",
+												"type": "DatasetReference",
+												"parameters": {
+													"Directory Name": {
+														"value": "@{item().SCHEMA_NAME}.@{item().TABLE_NAME}",
+														"type": "Expression"
+													}
+												}
+											},
+											"logStorageSettings": {
+												"linkedServiceName": {
+													"referenceName": "LS_Blob_Storage_Staging",
+													"type": "LinkedServiceReference"
+												},
+												"path": "deletelogs"
+											},
+											"enableLogging": true,
+											"storeSettings": {
+												"type": "AzureBlobStorageReadSettings",
+												"recursive": true,
+												"enablePartitionDiscovery": false
+											}
+										}
 									}
 								]
 							}
