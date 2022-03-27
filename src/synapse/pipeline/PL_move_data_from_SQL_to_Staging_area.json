@@ -108,7 +108,17 @@
 										"outputs": [
 											{
 												"referenceName": "DS_staging_csv",
-												"type": "DatasetReference"
+												"type": "DatasetReference",
+												"parameters": {
+													"directoryname": {
+														"value": "@{item().SCHEMA_NAME}.@{item().TABLE_NAME}",
+														"type": "Expression"
+													},
+													"filename": {
+														"value": "@concat('Full_copy_',formatDateTime(convertTimeZone(utcnow(),'UTC','India Standard Time'),'yyyy-MM-ddTHHmmss'), '.csv')",
+														"type": "Expression"
+													}
+												}
 											}
 										]
 									}
