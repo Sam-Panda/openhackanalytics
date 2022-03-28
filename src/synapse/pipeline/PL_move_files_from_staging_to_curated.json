@@ -96,11 +96,11 @@
 									"type": "DatasetReference",
 									"parameters": {
 										"directoryname": {
-											"value": "@{item().SCHEMA_NAME}",
+											"value": "@{item().SCHEMA_NAME}.@{item().TABLE_NAME}",
 											"type": "Expression"
 										},
 										"filename": {
-											"value": "@{item().TABLE_NAME}",
+											"value": "*",
 											"type": "Expression"
 										}
 									}

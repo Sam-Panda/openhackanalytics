@@ -22,7 +22,7 @@
 			"location": {
 				"type": "AzureBlobFSLocation",
 				"folderPath": {
-					"value": "@concat(dataset().current_date, '/', dataset().schema_name, '/', dataset().table_name)",
+					"value": "@concat(dataset().current_date, '/', dataset().schema_name, '.', dataset().table_name)",
 					"type": "Expression"
 				},
 				"fileSystem": "raw"
