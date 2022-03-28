@@ -28,7 +28,7 @@
 				}
 			},
 			{
-				"name": "ForEach1",
+				"name": "Loop metadata",
 				"type": "ForEach",
 				"dependsOn": [
 					{
