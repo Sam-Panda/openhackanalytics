@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "e06a8864-d00e-4891-a626-402d747565d3"
+				"spark.autotune.trackingId": "26c6d5ad-727e-45f8-b156-e796231656d7"
 			}
 		},
 		"metadata": {
@@ -174,13 +174,17 @@
 					"\r\n",
 					"table_full_name = f\"curated.{schema_name}_{table_name}\"\r\n",
 					"table_delta_file_location = f\"abfss://curated@opnhckadlstorage.dfs.core.windows.net/{schema_name}.{table_name}\"\r\n",
-					"sqltext = f\"CREATE TABLE {table_full_name} USING DELTA LOCATION '{table_delta_file_location}'\"\r\n",
-					"print(sqltext)\r\n",
 					"\r\n",
+					"drop_sqltext = f\"DROP TABLE IF EXISTS {table_full_name}\"\r\n",
+					"print (drop_sqltext)\r\n",
+					"spark.sql(drop_sqltext)\r\n",
+					"\r\n",
+					"sqltext = f\"CREATE TABLE IF NOT EXISTS {table_full_name} USING DELTA LOCATION '{table_delta_file_location}'\"\r\n",
+					"print(sqltext)\r\n",
 					"spark.sql(sqltext)\r\n",
 					""
 				],
-				"execution_count": 9
+				"execution_count": 12
 			},
 			{
 				"cell_type": "code",
