@@ -1,5 +1,5 @@
 {
-	"name": "PL_move_files_from_staging_to_curated",
+	"name": "PL_move_files_from_staging_to_raw",
 	"properties": {
 		"activities": [
 			{
