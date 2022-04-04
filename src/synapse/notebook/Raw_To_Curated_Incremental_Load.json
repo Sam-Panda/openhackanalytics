@@ -1,5 +1,5 @@
 {
-	"name": "Raw_To_Curated_Full_Load",
+	"name": "Raw_To_Curated_Incremental_Load",
 	"properties": {
 		"nbformat": 4,
 		"nbformat_minor": 2,
@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "0fc7b48c-65c6-4df5-888f-8753a2a0f930"
+				"spark.autotune.trackingId": "9053ef06-8c3d-47b1-a855-f3eb51e4fdf6"
 			}
 		},
 		"metadata": {
