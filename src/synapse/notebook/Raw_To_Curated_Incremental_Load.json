@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "9053ef06-8c3d-47b1-a855-f3eb51e4fdf6"
+				"spark.autotune.trackingId": "9de7719a-a9ef-494f-a4e0-65f025c5118c"
 			}
 		},
 		"metadata": {
@@ -58,9 +58,10 @@
 				"source": [
 					"date = \"2022-03-29\"\r\n",
 					"schema_name = \"SalesLT\"\r\n",
-					"table_name = \"Address\""
+					"table_name = \"SalesOrderDetail\"\r\n",
+					"merge_join_condition = \"source.SalesOrderDetailID = target.SalesOrderDetailID\""
 				],
-				"execution_count": 1
+				"execution_count": 25
 			},
 			{
 				"cell_type": "markdown",
@@ -93,9 +94,10 @@
 				"source": [
 					"print (f\"Table name: {table_name}\")\r\n",
 					"print(f\"Schema Name: {schema_name}\")\r\n",
-					"print(f\"Date: {date}\")"
+					"print(f\"Date: {date}\")\r\n",
+					"print(f\"merge_join_condition: {merge_join_condition}\")"
 				],
-				"execution_count": 2
+				"execution_count": 26
 			},
 			{
 				"cell_type": "code",
@@ -114,7 +116,7 @@
 					"from notebookutils import mssparkutils\r\n",
 					"files =mssparkutils.fs.ls(f'abfss://raw@opnhckadlstorage.dfs.core.windows.net/{date}/{schema_name}.{table_name}')"
 				],
-				"execution_count": 11
+				"execution_count": 27
 			},
 			{
 				"cell_type": "code",
@@ -132,7 +134,7 @@
 				"source": [
 					"files"
 				],
-				"execution_count": 31
+				"execution_count": 28
 			},
 			{
 				"cell_type": "code",
@@ -156,7 +158,7 @@
 					"    filesInfo.append(fileInfo)\r\n",
 					""
 				],
-				"execution_count": 35
+				"execution_count": 29
 			},
 			{
 				"cell_type": "code",
@@ -173,99 +175,11 @@
 				},
 				"source": [
 					"filesInfo\r\n",
-					"sorted_files_info = sorted(filesInfo, key = lambda i: i['Datepart'], reverse=True)\r\n",
+					"sorted_files_info = sorted(filesInfo, key = lambda i: i['Datepart'], reverse=False)\r\n",
 					"sorted_files_info\r\n",
-					"recentfile = sorted_files_info[0]['Fullpath'] # we are taking the recent file only for the full load."
+					"# recentfile = sorted_files_info[0]['Fullpath'] # we are taking the recent file only for the full load."
 				],
 				"execution_count": 42
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"recentfile"
-				],
-				"execution_count": 43
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					},
-					"microsoft": {
-						"language": "python"
-					},
-					"collapsed": false
-				},
-				"source": [
-					"%%pyspark\r\n",
-					"# read the data into dataframe.\r\n",
-					"df = spark.read.load(recentfile, format='csv'\r\n",
-					"## If header exists uncomment line below\r\n",
-					", header=True\r\n",
-					")\r\n",
-					"#display(df.limit(10))"
-				],
-				"execution_count": 44
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					},
-					"microsoft": {
-						"language": "python"
-					}
-				},
-				"source": [
-					"%%pyspark\r\n",
-					"table_full_name = f\"curated.{schema_name}_{table_name}\"\r\n",
-					"table_delta_file_location = f\"abfss://curated@opnhckadlstorage.dfs.core.windows.net/{schema_name}.{table_name}\""
-				],
-				"execution_count": 45
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"#writing the delta table into the curated location\r\n",
-					"df.write.format(\"delta\").mode(\"overwrite\").save(table_delta_file_location)"
-				],
-				"execution_count": 46
 			},
 			{
 				"cell_type": "code",
@@ -289,7 +203,7 @@
 					"\r\n",
 					"create database if not exists curated"
 				],
-				"execution_count": 47
+				"execution_count": 43
 			},
 			{
 				"cell_type": "code",
@@ -309,18 +223,164 @@
 				},
 				"source": [
 					"%%pyspark\r\n",
+					"table_full_name = f\"curated.{schema_name}_{table_name}\"\r\n",
+					"table_delta_file_location = f\"abfss://curated@opnhckadlstorage.dfs.core.windows.net/{schema_name}.{table_name}\""
+				],
+				"execution_count": 44
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"recentfile = sorted_files_info[0]['Fullpath']"
+				],
+				"execution_count": 45
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"def create_delta_table(\r\n",
+					"    df,\r\n",
+					"    table_full_name,\r\n",
+					"    table_delta_file_location\r\n",
+					"):\r\n",
+					"    isDeltaTableAlreadyPresent = 0\r\n",
+					"    try:\r\n",
+					"        mssparkutils.fs.ls(table_delta_file_location)\r\n",
+					"        isDeltaTableAlreadyPresent = 1\r\n",
+					"    except:\r\n",
+					"    #writing the delta table into the curated location\r\n",
+					"        df.write.format(\"delta\").mode(\"overwrite\").save(table_delta_file_location)\r\n",
+					"        sqltext = f\"CREATE TABLE IF NOT EXISTS {table_full_name} USING DELTA LOCATION '{table_delta_file_location}'\"\r\n",
+					"        print(sqltext)\r\n",
+					"        spark.sql(sqltext)\r\n",
+					"    return  isDeltaTableAlreadyPresent\r\n",
 					"\r\n",
-					"\r\n",
-					"drop_sqltext = f\"DROP TABLE IF EXISTS {table_full_name}\"\r\n",
-					"print (drop_sqltext)\r\n",
-					"spark.sql(drop_sqltext)\r\n",
-					"\r\n",
-					"sqltext = f\"CREATE TABLE IF NOT EXISTS {table_full_name} USING DELTA LOCATION '{table_delta_file_location}'\"\r\n",
-					"print(sqltext)\r\n",
-					"spark.sql(sqltext)\r\n",
 					""
 				],
-				"execution_count": 7
+				"execution_count": 46
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"from delta.tables import *\r\n",
+					"\r\n",
+					"\r\n",
+					"def incremental_file_load(\r\n",
+					"    input_full_file_path\r\n",
+					"    ,merge_join_condition\r\n",
+					"    ,table_delta_file_location):\r\n",
+					"\r\n",
+					"        # read the data into dataframe.\r\n",
+					"        df = spark.read.load(input_full_file_path, format='csv'\r\n",
+					"        ## If header exists uncomment line below\r\n",
+					"        , header=True\r\n",
+					"        )\r\n",
+					"        isDeltaTableAlreadyPresent = create_delta_table(\r\n",
+					"        df=df,\r\n",
+					"        table_full_name=table_full_name,\r\n",
+					"        table_delta_file_location=table_delta_file_location\r\n",
+					"        )\r\n",
+					"        if (isDeltaTableAlreadyPresent==1):\r\n",
+					"            pass\r\n",
+					"\r\n",
+					"\r\n",
+					""
+				],
+				"execution_count": 47
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"collapsed": false
+				},
+				"source": [
+					"for fileinfo in sorted_files_info:\r\n",
+					"    print (fileinfo['Fullpath'])\r\n",
+					"    incremental_file_load(\r\n",
+					"        input_full_file_path=fileinfo['Fullpath'],\r\n",
+					"        merge_join_condition=merge_join_condition,\r\n",
+					"        table_delta_file_location=table_delta_file_location\r\n",
+					"    )"
+				],
+				"execution_count": 48
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					""
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					""
+				],
+				"execution_count": null
 			}
 		]
 	}
