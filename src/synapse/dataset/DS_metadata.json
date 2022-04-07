@@ -25,6 +25,16 @@
 				"name": "FULLOAD",
 				"type": "int",
 				"precision": 10
+			},
+			{
+				"name": "WATER_MARK_COLUMN",
+				"type": "varchar"
+			},
+			{
+				"name": "DATA_FETCHED_TILL_TIMESTAMP",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
 			}
 		],
 		"typeProperties": {
