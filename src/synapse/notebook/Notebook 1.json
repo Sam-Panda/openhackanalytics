@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "af5679c9-29b7-4556-9469-fd967460d158"
+				"spark.autotune.trackingId": "c18089fd-9085-4299-bb7d-16aeaaad3c5c"
 			}
 		},
 		"metadata": {
@@ -62,7 +62,7 @@
 					"select * from curated.saleslt_salesorderdetail\r\n",
 					"where SalesOrderDetailID in ( 110562,110621)"
 				],
-				"execution_count": 1
+				"execution_count": 3
 			},
 			{
 				"cell_type": "code",
