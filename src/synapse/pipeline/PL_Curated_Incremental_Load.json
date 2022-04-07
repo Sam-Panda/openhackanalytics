@@ -55,9 +55,9 @@
 									"value": "@bool(item().FULLOAD)",
 									"type": "Expression"
 								},
-								"ifTrueActivities": [
+								"ifFalseActivities": [
 									{
-										"name": "NotebookToLoadFullData",
+										"name": "Notebook for Curated Incremental Load",
 										"type": "SynapseNotebook",
 										"dependsOn": [],
 										"policy": {
@@ -70,7 +70,7 @@
 										"userProperties": [],
 										"typeProperties": {
 											"notebook": {
-												"referenceName": "Raw_To_Curated_Full_Load",
+												"referenceName": "Raw_To_Curated_Incremental_Load",
 												"type": "NotebookReference"
 											},
 											"parameters": {
@@ -91,6 +91,13 @@
 												"date": {
 													"value": {
 														"value": "@pipeline().parameters.currentDate",
+														"type": "Expression"
+													},
+													"type": "string"
+												},
+												"merge_join_condition": {
+													"value": {
+														"value": "@{item().MERGE_JOIN_CONDITION}",
 														"type": "Expression"
 													},
 													"type": "string"
