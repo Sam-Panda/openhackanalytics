@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "9de7719a-a9ef-494f-a4e0-65f025c5118c"
+				"spark.autotune.trackingId": "75fd830d-ddc7-480b-ab5d-a74fe35baa76"
 			}
 		},
 		"metadata": {
@@ -61,7 +61,7 @@
 					"table_name = \"SalesOrderDetail\"\r\n",
 					"merge_join_condition = \"source.SalesOrderDetailID = target.SalesOrderDetailID\""
 				],
-				"execution_count": 25
+				"execution_count": 1
 			},
 			{
 				"cell_type": "markdown",
@@ -97,7 +97,7 @@
 					"print(f\"Date: {date}\")\r\n",
 					"print(f\"merge_join_condition: {merge_join_condition}\")"
 				],
-				"execution_count": 26
+				"execution_count": 2
 			},
 			{
 				"cell_type": "code",
@@ -116,7 +116,7 @@
 					"from notebookutils import mssparkutils\r\n",
 					"files =mssparkutils.fs.ls(f'abfss://raw@opnhckadlstorage.dfs.core.windows.net/{date}/{schema_name}.{table_name}')"
 				],
-				"execution_count": 27
+				"execution_count": 3
 			},
 			{
 				"cell_type": "code",
@@ -134,7 +134,7 @@
 				"source": [
 					"files"
 				],
-				"execution_count": 28
+				"execution_count": 4
 			},
 			{
 				"cell_type": "code",
@@ -158,7 +158,7 @@
 					"    filesInfo.append(fileInfo)\r\n",
 					""
 				],
-				"execution_count": 29
+				"execution_count": 5
 			},
 			{
 				"cell_type": "code",
@@ -179,7 +179,7 @@
 					"sorted_files_info\r\n",
 					"# recentfile = sorted_files_info[0]['Fullpath'] # we are taking the recent file only for the full load."
 				],
-				"execution_count": 42
+				"execution_count": 6
 			},
 			{
 				"cell_type": "code",
@@ -203,7 +203,7 @@
 					"\r\n",
 					"create database if not exists curated"
 				],
-				"execution_count": 43
+				"execution_count": 7
 			},
 			{
 				"cell_type": "code",
@@ -226,7 +226,7 @@
 					"table_full_name = f\"curated.{schema_name}_{table_name}\"\r\n",
 					"table_delta_file_location = f\"abfss://curated@opnhckadlstorage.dfs.core.windows.net/{schema_name}.{table_name}\""
 				],
-				"execution_count": 44
+				"execution_count": 8
 			},
 			{
 				"cell_type": "code",
@@ -244,7 +244,7 @@
 				"source": [
 					"recentfile = sorted_files_info[0]['Fullpath']"
 				],
-				"execution_count": 45
+				"execution_count": 9
 			},
 			{
 				"cell_type": "code",
@@ -279,7 +279,43 @@
 					"\r\n",
 					""
 				],
-				"execution_count": 46
+				"execution_count": 10
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"def mergeDeltaTable(\r\n",
+					"    table_full_name,\r\n",
+					"    df,\r\n",
+					"    merge_join_condition\r\n",
+					"):\r\n",
+					"    df.createOrReplaceTempView(\"temp_vw_new_data\")\r\n",
+					"    sqltext = (f'''\r\n",
+					"\r\n",
+					"    MERGE INTO {table_full_name} as source\r\n",
+					"    USING temp_vw_new_data as target\r\n",
+					"    ON {merge_join_condition}    \r\n",
+					"    WHEN MATCHED THEN UPDATE SET *\r\n",
+					"    WHEN NOT MATCHED THEN INSERT *\r\n",
+					"\r\n",
+					"    \r\n",
+					"    \r\n",
+					"    ''')\r\n",
+					"    print(sqltext)\r\n",
+					"    spark.sql(sqltext)"
+				],
+				"execution_count": 33
 			},
 			{
 				"cell_type": "code",
@@ -313,13 +349,19 @@
 					"        table_full_name=table_full_name,\r\n",
 					"        table_delta_file_location=table_delta_file_location\r\n",
 					"        )\r\n",
+					"        print (f\"isDeltaTableAlreadyPresent = {isDeltaTableAlreadyPresent} [[ 0= Not Present, so we created the delta table. 1= present ]], we skip creatioon of the delta table\")\r\n",
 					"        if (isDeltaTableAlreadyPresent==1):\r\n",
-					"            pass\r\n",
+					"            print(\" We are going to merge the new dataframe with the delta table\")\r\n",
+					"            mergeDeltaTable(\r\n",
+					"                merge_join_condition=merge_join_condition,\r\n",
+					"                df=df,\r\n",
+					"                table_full_name=table_full_name\r\n",
+					"            )\r\n",
 					"\r\n",
 					"\r\n",
 					""
 				],
-				"execution_count": 47
+				"execution_count": 30
 			},
 			{
 				"cell_type": "code",
@@ -344,7 +386,7 @@
 					"        table_delta_file_location=table_delta_file_location\r\n",
 					"    )"
 				],
-				"execution_count": 48
+				"execution_count": 34
 			},
 			{
 				"cell_type": "code",
@@ -357,12 +399,18 @@
 						"transient": {
 							"deleting": false
 						}
-					}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
 				},
 				"source": [
-					""
+					"%%sql\r\n",
+					"\r\n",
+					"select count(*) from curated.saleslt_salesorderdetail"
 				],
-				"execution_count": null
+				"execution_count": 32
 			},
 			{
 				"cell_type": "code",
