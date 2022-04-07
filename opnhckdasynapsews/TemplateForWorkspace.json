@@ -173,6 +173,262 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/PL_Curated_Incremental_Load')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "Lookup_metadata",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "DS_metadata",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "Loop metadata",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "Lookup_metadata",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('Lookup_metadata').output.value",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "If Condition1",
+									"type": "IfCondition",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"expression": {
+											"value": "@bool(item().FULLOAD)",
+											"type": "Expression"
+										},
+										"ifFalseActivities": [
+											{
+												"name": "Notebook for Curated Incremental Load",
+												"type": "SynapseNotebook",
+												"dependsOn": [],
+												"policy": {
+													"timeout": "7.00:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"notebook": {
+														"referenceName": "Raw_To_Curated_Incremental_Load",
+														"type": "NotebookReference"
+													},
+													"parameters": {
+														"schema_name": {
+															"value": {
+																"value": "@{item().SCHEMA_NAME}",
+																"type": "Expression"
+															},
+															"type": "string"
+														},
+														"table_name": {
+															"value": {
+																"value": "@{item().TABLE_NAME}",
+																"type": "Expression"
+															},
+															"type": "string"
+														},
+														"date": {
+															"value": {
+																"value": "@pipeline().parameters.currentDate",
+																"type": "Expression"
+															},
+															"type": "string"
+														},
+														"merge_join_condition": {
+															"value": {
+																"value": "@{item().MERGE_JOIN_CONDITION}",
+																"type": "Expression"
+															},
+															"type": "string"
+														}
+													},
+													"snapshot": true,
+													"sparkPool": {
+														"referenceName": "sparkpool",
+														"type": "BigDataPoolReference"
+													}
+												}
+											}
+										]
+									}
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"currentDate": {
+						"type": "string"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/datasets/DS_metadata')]",
+				"[concat(variables('workspaceId'), '/notebooks/Raw_To_Curated_Incremental_Load')]",
+				"[concat(variables('workspaceId'), '/bigDataPools/sparkpool')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/PL_master_pipeline')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "SQL to Staging",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "PL_move_data_from_SQL_to_Staging_area",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Staging to Raw",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "SQL to Staging",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "PL_move_files_from_staging_to_raw",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {
+								"currentDate": {
+									"value": "@pipeline().parameters.currentDate",
+									"type": "Expression"
+								}
+							}
+						}
+					},
+					{
+						"name": "Raw to Curated Full",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Staging to Raw",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "PL_Curated_Full_Load",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {
+								"currentDate": {
+									"value": "@pipeline().parameters.currentDate",
+									"type": "Expression"
+								}
+							}
+						}
+					},
+					{
+						"name": "Raw to Curated Incremental",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Staging to Raw",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "PL_Curated_Incremental_Load",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {
+								"currentDate": {
+									"value": "@pipeline().parameters.currentDate",
+									"type": "Expression"
+								}
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"currentDate": {
+						"type": "string"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/pipelines/PL_move_data_from_SQL_to_Staging_area')]",
+				"[concat(variables('workspaceId'), '/pipelines/PL_move_files_from_staging_to_raw')]",
+				"[concat(variables('workspaceId'), '/pipelines/PL_Curated_Full_Load')]",
+				"[concat(variables('workspaceId'), '/pipelines/PL_Curated_Incremental_Load')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/PL_move_data_from_SQL_to_Staging_area')]",
 			"type": "Microsoft.Synapse/workspaces/pipelines",
 			"apiVersion": "2019-06-01-preview",
@@ -927,6 +1183,16 @@
 						"name": "FULLOAD",
 						"type": "int",
 						"precision": 10
+					},
+					{
+						"name": "WATER_MARK_COLUMN",
+						"type": "varchar"
+					},
+					{
+						"name": "DATA_FETCHED_TILL_TIMESTAMP",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
 					}
 				],
 				"typeProperties": {
@@ -1181,6 +1447,97 @@
 			"properties": {
 				"type": "ManagedIdentity",
 				"typeProperties": {}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Notebook 1')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"nbformat": 4,
+				"nbformat_minor": 2,
+				"bigDataPool": {
+					"referenceName": "sparkpool",
+					"type": "BigDataPoolReference"
+				},
+				"sessionProperties": {
+					"driverMemory": "28g",
+					"driverCores": 4,
+					"executorMemory": "28g",
+					"executorCores": 4,
+					"numExecutors": 2,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2",
+						"spark.autotune.trackingId": "af5679c9-29b7-4556-9469-fd967460d158"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"enableDebugMode": false,
+					"kernelspec": {
+						"name": "synapse_pyspark",
+						"display_name": "Synapse PySpark"
+					},
+					"language_info": {
+						"name": "python"
+					},
+					"a365ComputeOptions": {
+						"id": "/subscriptions/89c37dd8-94bb-4870-98e0-1cfb98c0262e/resourceGroups/openhack_data_analytics/providers/Microsoft.Synapse/workspaces/opnhckdasynapsews/bigDataPools/sparkpool",
+						"name": "sparkpool",
+						"type": "Spark",
+						"endpoint": "https://opnhckdasynapsews.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sparkpool",
+						"auth": {
+							"type": "AAD",
+							"authResource": "https://dev.azuresynapse.net"
+						},
+						"sparkVersion": "3.1",
+						"nodeCount": 10,
+						"cores": 4,
+						"memory": 28
+					},
+					"sessionKeepAliveTimeout": 30
+				},
+				"cells": [
+					{
+						"cell_type": "code",
+						"metadata": {
+							"microsoft": {
+								"language": "sparksql"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%sql\r\n",
+							"\r\n",
+							"select * from curated.saleslt_salesorderdetail\r\n",
+							"where SalesOrderDetailID in ( 110562,110621)"
+						],
+						"outputs": [],
+						"execution_count": 1
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							""
+						],
+						"outputs": [],
+						"execution_count": null
+					}
+				]
 			},
 			"dependsOn": []
 		},
@@ -1546,7 +1903,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "05ab949f-6a5b-46fd-b9a6-2e7183e34f00"
+						"spark.autotune.trackingId": "75fd830d-ddc7-480b-ab5d-a74fe35baa76"
 					}
 				},
 				"metadata": {
@@ -1571,8 +1928,7 @@
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 4,
-						"memory": 28,
-						"automaticScaleJobs": false
+						"memory": 28
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -2002,145 +2358,6 @@
 			},
 			"dependsOn": [],
 			"location": "eastus"
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/PL_Curated_Incremental_Load')]",
-			"type": "Microsoft.Synapse/workspaces/pipelines",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"activities": [
-					{
-						"name": "Lookup_metadata",
-						"type": "Lookup",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "AzureSqlSource",
-								"queryTimeout": "02:00:00",
-								"partitionOption": "None"
-							},
-							"dataset": {
-								"referenceName": "DS_metadata",
-								"type": "DatasetReference",
-								"parameters": {}
-							},
-							"firstRowOnly": false
-						}
-					},
-					{
-						"name": "Loop metadata",
-						"type": "ForEach",
-						"dependsOn": [
-							{
-								"activity": "Lookup_metadata",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"items": {
-								"value": "@activity('Lookup_metadata').output.value",
-								"type": "Expression"
-							},
-							"activities": [
-								{
-									"name": "If Condition1",
-									"type": "IfCondition",
-									"dependsOn": [],
-									"userProperties": [],
-									"typeProperties": {
-										"expression": {
-											"value": "@bool(item().FULLOAD)",
-											"type": "Expression"
-										},
-										"ifFalseActivities": [
-											{
-												"name": "Notebook for Curated Incremental Load",
-												"type": "SynapseNotebook",
-												"dependsOn": [],
-												"policy": {
-													"timeout": "7.00:00:00",
-													"retry": 0,
-													"retryIntervalInSeconds": 30,
-													"secureOutput": false,
-													"secureInput": false
-												},
-												"userProperties": [],
-												"typeProperties": {
-													"notebook": {
-														"referenceName": "Raw_To_Curated_Incremental_Load",
-														"type": "NotebookReference"
-													},
-													"parameters": {
-														"schema_name": {
-															"value": {
-																"value": "@{item().SCHEMA_NAME}",
-																"type": "Expression"
-															},
-															"type": "string"
-														},
-														"table_name": {
-															"value": {
-																"value": "@{item().TABLE_NAME}",
-																"type": "Expression"
-															},
-															"type": "string"
-														},
-														"date": {
-															"value": {
-																"value": "@pipeline().parameters.currentDate",
-																"type": "Expression"
-															},
-															"type": "string"
-														},
-														"merge_join_condition": {
-															"value": {
-																"value": "@{item().MERGE_JOIN_CONDITION}",
-																"type": "Expression"
-															},
-															"type": "string"
-														}
-													},
-													"snapshot": true,
-													"sparkPool": {
-														"referenceName": "sparkpool",
-														"type": "BigDataPoolReference"
-													}
-												}
-											}
-										]
-									}
-								}
-							]
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"parameters": {
-					"currentDate": {
-						"type": "string"
-					}
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('workspaceId'), '/datasets/DS_metadata')]",
-				"[concat(variables('workspaceId'), '/notebooks/Raw_To_Curated_Incremental_Load')]",
-				"[concat(variables('workspaceId'), '/bigDataPools/sparkpool')]"
-			]
 		}
 	]
 }
