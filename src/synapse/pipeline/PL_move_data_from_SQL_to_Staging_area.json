@@ -28,7 +28,7 @@
 				}
 			},
 			{
-				"name": "ForEach1",
+				"name": "Loop metadata",
 				"type": "ForEach",
 				"dependsOn": [
 					{
@@ -197,14 +197,7 @@
 									{
 										"name": "Copy Full Data",
 										"type": "Copy",
-										"dependsOn": [
-											{
-												"activity": "Delete Previously Existing Files",
-												"dependencyConditions": [
-													"Succeeded"
-												]
-											}
-										],
+										"dependsOn": [],
 										"policy": {
 											"timeout": "7.00:00:00",
 											"retry": 0,
@@ -266,44 +259,6 @@
 												}
 											}
 										]
-									},
-									{
-										"name": "Delete Previously Existing Files",
-										"type": "Delete",
-										"dependsOn": [],
-										"policy": {
-											"timeout": "7.00:00:00",
-											"retry": 0,
-											"retryIntervalInSeconds": 30,
-											"secureOutput": false,
-											"secureInput": false
-										},
-										"userProperties": [],
-										"typeProperties": {
-											"dataset": {
-												"referenceName": "DS_Blob_Storage_delete_staging",
-												"type": "DatasetReference",
-												"parameters": {
-													"Directory Name": {
-														"value": "@{item().SCHEMA_NAME}.@{item().TABLE_NAME}",
-														"type": "Expression"
-													}
-												}
-											},
-											"logStorageSettings": {
-												"linkedServiceName": {
-													"referenceName": "LS_Blob_Storage_Staging",
-													"type": "LinkedServiceReference"
-												},
-												"path": "deletelogs"
-											},
-											"enableLogging": true,
-											"storeSettings": {
-												"type": "AzureBlobStorageReadSettings",
-												"recursive": true,
-												"enablePartitionDiscovery": false
-											}
-										}
 									}
 								]
 							}

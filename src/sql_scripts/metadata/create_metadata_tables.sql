@@ -10,28 +10,29 @@ CREATE TABLE [dbo].[tablses_to_copy]
     TABLE_NAME VARCHAR(50),
     FULLOAD INT, --1/0 1= yes, 0 =no
     WATER_MARK_COLUMN varchar(50),
-    DATA_FETCHED_TILL_TIMESTAMP DATETIME
+    DATA_FETCHED_TILL_TIMESTAMP DATETIME,
+    MERGE_JOIN_CONDITION Varchar(255)
 )
 
 GO
 
 INSERT INTO [dbo].[tablses_to_copy] 
-Select 'SalesLT','Address','1' ,'','2000-01-01 12:00:00'
+Select 'SalesLT','Address','1' ,'','2000-01-01 12:00:00', ''
 
 GO
 
 INSERT INTO [dbo].[tablses_to_copy] 
-Select 'SalesLT','Customer','1', '','2000-01-01 12:00:00'
+Select 'SalesLT','Customer','1', '','2000-01-01 12:00:00', ''
 
 GO
 
 INSERT INTO [dbo].[tablses_to_copy] 
-Select 'SalesLT','SalesOrderDetail', 0 , 'ModifiedDate', '2000-01-01 13:00:00'
+Select 'SalesLT','SalesOrderDetail', 0 , 'ModifiedDate', '2000-01-01 13:00:00', 'source.SalesOrderDetailID = target.SalesOrderDetailID'
 
 GO
 
-INSERT INTO [dbo].[tablses_to_copy] 
-Select 'SalesLT','SalesOrderDetail', 0 , 'ModifiedDate', '2000-01-01 13:00:00'
+-- INSERT INTO [dbo].[tablses_to_copy] 
+-- Select 'SalesLT','SalesOrderDetail', 0 , 'ModifiedDate', '2000-01-01 13:00:00'
 
 -- Select * from dbo.tablses_to_copy
 
