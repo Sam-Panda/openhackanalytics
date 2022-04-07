@@ -57,7 +57,7 @@
 								},
 								"ifTrueActivities": [
 									{
-										"name": "NotebookToLoadFullData",
+										"name": "Notebook To Load FullData in Curated Layer",
 										"type": "SynapseNotebook",
 										"dependsOn": [],
 										"policy": {
