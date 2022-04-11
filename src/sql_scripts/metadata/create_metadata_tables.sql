@@ -1,3 +1,6 @@
+USE metadatadb
+GO
+
 IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[tablses_to_copy]') AND type in (N'U'))
 DROP TABLE [dbo].[tablses_to_copy]
 GO
@@ -27,19 +30,19 @@ Select 'SalesLT','Customer','1', '','2000-01-01 12:00:00', ''
 GO
 
 INSERT INTO [dbo].[tablses_to_copy] 
+Select 'SalesLT','CustomerAddress','1', '','2000-01-01 12:00:00', ''
+
+GO
+
+INSERT INTO [dbo].[tablses_to_copy] 
 Select 'SalesLT','SalesOrderDetail', 0 , 'ModifiedDate', '2000-01-01 13:00:00', 'source.SalesOrderDetailID = target.SalesOrderDetailID'
 
 GO
 
--- INSERT INTO [dbo].[tablses_to_copy] 
--- Select 'SalesLT','SalesOrderDetail', 0 , 'ModifiedDate', '2000-01-01 13:00:00'
+INSERT INTO [dbo].[tablses_to_copy] 
+Select 'SalesLT','SalesOrderHeader', 0 , 'ModifiedDate', '2000-01-01 13:00:00', 'source.SalesOrderID = target.SalesOrderID'
 
--- Select * from dbo.tablses_to_copy
-
--- select getdate()
-
--- select * from SalesLT.SalesOrderDetail where ModifiedDate > '2000-01-01 13:00:00'
-
+GO
 
 USE metadatadb
 GO
@@ -52,3 +55,4 @@ AS
 UPDATE dbo.tablses_to_copy
 SET DATA_FETCHED_TILL_TIMESTAMP= @watermarkValueToBeUpdated
 where SCHEMA_NAME=@schemaName and TABLE_NAME=@tableName
+
