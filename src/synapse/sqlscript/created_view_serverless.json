@@ -2,12 +2,12 @@
 	"name": "created_view_serverless",
 	"properties": {
 		"content": {
-			"query": "-- This is auto-generated code\n\ncreate database if not exists curated_svrlss \ngo\n\nUSE curated_svrlss\nGO\n\nCREATE VIEW if not exists dbo.saleslt_address\nAS\n\nSELECT\n     *\nFROM\n    OPENROWSET(\n        BULK 'https://opnhckadlstorage.dfs.core.windows.net/curated/SalesLT.Address/',\n        FORMAT = 'DELTA'\n    ) AS [result]\n",
+			"query": "-- This is auto-generated code\n\n-- create database if not exists curated_svrlss \n-- go\n\nUSE curated_svrlss\nGO\n\nCREATE OR ALTER VIEW  dbo.saleslt_address\nAS\n\nSELECT\n     *\nFROM\n    OPENROWSET(\n        BULK 'https://opnhckadlstorage.dfs.core.windows.net/curated/SalesLT.Address/',\n        FORMAT = 'DELTA'\n    ) AS [result]\n\nGO\n\nCREATE OR ALTER VIEW  dbo.saleslt_Customer\nAS\n\nSELECT\n     *\nFROM\n    OPENROWSET(\n        BULK 'https://opnhckadlstorage.dfs.core.windows.net/curated/SalesLT.Customer/',\n        FORMAT = 'DELTA'\n    ) AS [result]\n\nGO\n\nCREATE OR ALTER VIEW  dbo.saleslt_SalesOrderDetail\nAS\n\nSELECT\n     *\nFROM\n    OPENROWSET(\n        BULK 'https://opnhckadlstorage.dfs.core.windows.net/curated/SalesLT.SalesOrderDetail/',\n        FORMAT = 'DELTA'\n    ) AS [result]\n\n",
 			"metadata": {
 				"language": "sql"
 			},
 			"currentConnection": {
-				"databaseName": "master",
+				"databaseName": "curated_svrlss",
 				"poolName": "Built-in"
 			},
 			"resultLimit": 5000
