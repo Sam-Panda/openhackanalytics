@@ -1510,6 +1510,26 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/created_view_serverless')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "-- This is auto-generated code\n\n-- create database if not exists curated_svrlss \n-- go\n\nUSE curated_svrlss\nGO\n\nCREATE OR ALTER VIEW  dbo.saleslt_address\nAS\n\nSELECT\n     *\nFROM\n    OPENROWSET(\n        BULK 'https://opnhckadlstorage.dfs.core.windows.net/curated/SalesLT.Address/',\n        FORMAT = 'DELTA'\n    ) AS [result]\n\nGO\n\nCREATE OR ALTER VIEW  dbo.saleslt_Customer\nAS\n\nSELECT\n     *\nFROM\n    OPENROWSET(\n        BULK 'https://opnhckadlstorage.dfs.core.windows.net/curated/SalesLT.Customer/',\n        FORMAT = 'DELTA'\n    ) AS [result]\n\nGO\n\nCREATE OR ALTER VIEW  dbo.saleslt_SalesOrderDetail\nAS\n\nSELECT\n     *\nFROM\n    OPENROWSET(\n        BULK 'https://opnhckadlstorage.dfs.core.windows.net/curated/SalesLT.SalesOrderDetail/',\n        FORMAT = 'DELTA'\n    ) AS [result]\n\nGO\nCREATE OR ALTER VIEW  dbo.saleslt_SalesOrderHeader\nAS\n\nSELECT\n     *\nFROM\n    OPENROWSET(\n        BULK 'https://opnhckadlstorage.dfs.core.windows.net/curated/SalesLT.SalesOrderHeader/',\n        FORMAT = 'DELTA'\n    ) AS [result]\n\n",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "curated_svrlss",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/Notebook 1')]",
 			"type": "Microsoft.Synapse/workspaces/notebooks",
 			"apiVersion": "2019-06-01-preview",
@@ -1530,7 +1550,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "c18089fd-9085-4299-bb7d-16aeaaad3c5c"
+						"spark.autotune.trackingId": "965245ef-1d46-4a9f-8fd4-297a88f31333"
 					}
 				},
 				"metadata": {
@@ -1575,7 +1595,7 @@
 							"where SalesOrderDetailID in ( 110562,110621)"
 						],
 						"outputs": [],
-						"execution_count": 3
+						"execution_count": 1
 					},
 					{
 						"cell_type": "code",
