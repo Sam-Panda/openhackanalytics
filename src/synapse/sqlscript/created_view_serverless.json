@@ -1,0 +1,17 @@
+{
+	"name": "created_view_serverless",
+	"properties": {
+		"content": {
+			"query": "-- This is auto-generated code\n\ncreate database if not exists curated_svrlss \ngo\n\nUSE curated_svrlss\nGO\n\nCREATE VIEW if not exists dbo.saleslt_address\nAS\n\nSELECT\n     *\nFROM\n    OPENROWSET(\n        BULK 'https://opnhckadlstorage.dfs.core.windows.net/curated/SalesLT.Address/',\n        FORMAT = 'DELTA'\n    ) AS [result]\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "master",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
