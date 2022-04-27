@@ -8,6 +8,10 @@
 				"pipelineReference": {
 					"referenceName": "EH_capture",
 					"type": "PipelineReference"
+				},
+				"parameters": {
+					"sourceFolder": "@triggerBody().folderPath",
+					"sourceFile": "@triggerBody().fileName"
 				}
 			}
 		],

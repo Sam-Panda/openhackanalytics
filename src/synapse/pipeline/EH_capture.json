@@ -1,6 +1,14 @@
 {
 	"name": "EH_capture",
 	"properties": {
+		"parameters": {
+			"sourceFolder": {
+				"type": "string"
+			},
+			"sourceFile": {
+				"type": "string"
+			}
+		},
 		"annotations": []
 	}
 }
