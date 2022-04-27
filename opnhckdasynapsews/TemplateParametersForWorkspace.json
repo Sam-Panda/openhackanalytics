@@ -5,6 +5,9 @@
 		"workspaceName": {
 			"value": "opnhckdasynapsews"
 		},
+		"ls_stream_eh_blob_connectionString": {
+			"value": ""
+		},
 		"opnhckdasynapsews-WorkspaceDefaultSqlServer_connectionString": {
 			"value": ""
 		},
@@ -25,6 +28,15 @@
 		},
 		"opnhckdasynapsews-WorkspaceDefaultStorage_properties_typeProperties_url": {
 			"value": "https://opnhckdasynapseadlsg2.dfs.core.windows.net"
+		},
+		"trigger_StreamAnalyticsOutput_properties_EH_capture_parameters_sourceFolder": {
+			"value": "@triggerBody().folderPath"
+		},
+		"trigger_StreamAnalyticsOutput_properties_EH_capture_parameters_sourceFile": {
+			"value": "@triggerBody().fileName"
+		},
+		"trigger_StreamAnalyticsOutput_properties_typeProperties_scope": {
+			"value": "/subscriptions/89c37dd8-94bb-4870-98e0-1cfb98c0262e/resourceGroups/openhack_data_analytics/providers/Microsoft.Storage/storageAccounts/opnhckstorage"
 		}
 	}
 }
