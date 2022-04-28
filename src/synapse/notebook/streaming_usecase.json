@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "22829e27-01fa-4b09-8745-70ea2511fea9"
+				"spark.autotune.trackingId": "572c77f4-b43c-418f-91f1-597bc9d5a4b7"
 			}
 		},
 		"metadata": {
@@ -116,7 +116,7 @@
 					"collapsed": false
 				},
 				"source": [
-					"df = spark.read.load(f'wasbs://{blob_container_name}@{blob_account_name}.blob.core.windows.net/2026390744_468749de2e094791add867a698517d69_1.csv', format='csv'\r\n",
+					"df = spark.read.load(f'wasbs://{blob_container_name}@{blob_account_name}.blob.core.windows.net/{file_name}', format='csv'\r\n",
 					"## If header exists uncomment line below\r\n",
 					", header=True\r\n",
 					")\r\n",
