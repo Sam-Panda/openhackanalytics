@@ -1677,7 +1677,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "6234376f-ffd6-49a8-b119-60f3def5d5d9"
+						"spark.autotune.trackingId": "8140b9d6-0d40-46cb-8c36-55bbd79199a5"
 					}
 				},
 				"metadata": {
@@ -1747,7 +1747,7 @@
 							"select count(*) from curated.eh_delta_table"
 						],
 						"outputs": [],
-						"execution_count": 1
+						"execution_count": 2
 					}
 				]
 			},
@@ -1774,7 +1774,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "526f9e37-0e53-4079-96fa-f74fd2d86f60"
+						"spark.autotune.trackingId": "30372132-cdae-42dd-b19d-dfb359a5c9ff"
 					}
 				},
 				"metadata": {
@@ -2690,7 +2690,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "22829e27-01fa-4b09-8745-70ea2511fea9"
+						"spark.autotune.trackingId": "17b23fee-b3ef-4e5e-9219-50bc7bdc1e7c"
 					}
 				},
 				"metadata": {
@@ -2715,7 +2715,8 @@
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 4,
-						"memory": 28
+						"memory": 28,
+						"automaticScaleJobs": false
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -2790,14 +2791,33 @@
 							"collapsed": false
 						},
 						"source": [
-							"df = spark.read.load(f'wasbs://{blob_container_name}@{blob_account_name}.blob.core.windows.net/2026390744_468749de2e094791add867a698517d69_1.csv', format='csv'\r\n",
+							"df = spark.read.load(f'wasbs://{blob_container_name}@{blob_account_name}.blob.core.windows.net/{file_name}', format='csv'\r\n",
 							"## If header exists uncomment line below\r\n",
 							", header=True\r\n",
 							")\r\n",
-							"display(df.limit(10))"
+							"#display(df.limit(10))"
 						],
 						"outputs": [],
 						"execution_count": 4
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"print(df.count())"
+						],
+						"outputs": [],
+						"execution_count": null
 					},
 					{
 						"cell_type": "code",
