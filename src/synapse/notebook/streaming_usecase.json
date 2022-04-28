@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "572c77f4-b43c-418f-91f1-597bc9d5a4b7"
+				"spark.autotune.trackingId": "cafa51a7-ccc0-483c-acd3-d0774409c136"
 			}
 		},
 		"metadata": {
@@ -120,9 +120,27 @@
 					"## If header exists uncomment line below\r\n",
 					", header=True\r\n",
 					")\r\n",
-					"display(df.limit(10))"
+					"#display(df.limit(10))"
 				],
 				"execution_count": 4
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"print(df.count())"
+				],
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
