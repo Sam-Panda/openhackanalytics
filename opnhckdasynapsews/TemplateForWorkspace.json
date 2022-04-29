@@ -76,7 +76,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"notebook": {
-								"referenceName": "streaming_usecase",
+								"referenceName": "streaming_usecase_using_eh_capture",
 								"type": "NotebookReference"
 							},
 							"parameters": {
@@ -111,7 +111,7 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('workspaceId'), '/notebooks/streaming_usecase')]",
+				"[concat(variables('workspaceId'), '/notebooks/streaming_usecase_using_eh_capture')]",
 				"[concat(variables('workspaceId'), '/bigDataPools/sparkpool')]"
 			]
 		},
@@ -1642,7 +1642,7 @@
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
 				"content": {
-					"query": "-- This is auto-generated code\n\n-- create database if not exists curated_svrlss \n-- go\n\nUSE curated_svrlss\nGO\n\nCREATE OR ALTER VIEW  dbo.saleslt_address\nAS\n\nSELECT\n     *\nFROM\n    OPENROWSET(\n        BULK 'https://opnhckadlstorage.dfs.core.windows.net/curated/SalesLT.Address/',\n        FORMAT = 'DELTA'\n    ) AS [result]\n\nGO\n\nCREATE OR ALTER VIEW  dbo.saleslt_Customer\nAS\n\nSELECT\n     *\nFROM\n    OPENROWSET(\n        BULK 'https://opnhckadlstorage.dfs.core.windows.net/curated/SalesLT.Customer/',\n        FORMAT = 'DELTA'\n    ) AS [result]\n\nGO\n\nCREATE OR ALTER VIEW  dbo.saleslt_SalesOrderDetail\nAS\n\nSELECT\n     *\nFROM\n    OPENROWSET(\n        BULK 'https://opnhckadlstorage.dfs.core.windows.net/curated/SalesLT.SalesOrderDetail/',\n        FORMAT = 'DELTA'\n    ) AS [result]\n\nGO\nCREATE OR ALTER VIEW  dbo.saleslt_SalesOrderHeader\nAS\n\nSELECT\n     *\nFROM\n    OPENROWSET(\n        BULK 'https://opnhckadlstorage.dfs.core.windows.net/curated/SalesLT.SalesOrderHeader/',\n        FORMAT = 'DELTA'\n    ) AS [result]\n\n",
+					"query": "-- This is auto-generated code\n\n-- create database if not exists curated_svrlss \n-- go\n\nUSE curated_svrlss\nGO\n\nCREATE OR ALTER VIEW  dbo.saleslt_address\nAS\n\nSELECT\n     *\nFROM\n    OPENROWSET(\n        BULK 'https://opnhckadlstorage.dfs.core.windows.net/curated/SalesLT.Address/',\n        FORMAT = 'DELTA'\n    ) AS [result]\n\nGO\n\nCREATE OR ALTER VIEW  dbo.saleslt_Customer\nAS\n\nSELECT\n     *\nFROM\n    OPENROWSET(\n        BULK 'https://opnhckadlstorage.dfs.core.windows.net/curated/SalesLT.Customer/',\n        FORMAT = 'DELTA'\n    ) AS [result]\n\nGO\n\nCREATE OR ALTER VIEW  dbo.saleslt_SalesOrderDetail\nAS\n\nSELECT\n     *\nFROM\n    OPENROWSET(\n        BULK 'https://opnhckadlstorage.dfs.core.windows.net/curated/SalesLT.SalesOrderDetail/',\n        FORMAT = 'DELTA'\n    ) AS [result]\n\nGO\nCREATE OR ALTER VIEW  dbo.saleslt_SalesOrderHeader\nAS\n\nSELECT\n     *\nFROM\n    OPENROWSET(\n        BULK 'https://opnhckadlstorage.dfs.core.windows.net/curated/SalesLT.SalesOrderHeader/',\n        FORMAT = 'DELTA'\n    ) AS [result]\n\nGO\n\n\n",
 					"metadata": {
 						"language": "sql"
 					},
@@ -1677,7 +1677,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "b7bef728-e480-44d0-ad90-c2c84b33d385"
+						"spark.autotune.trackingId": "ef41b985-a1c6-4259-adeb-44465146d411"
 					}
 				},
 				"metadata": {
@@ -1702,7 +1702,8 @@
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 4,
-						"memory": 28
+						"memory": 28,
+						"automaticScaleJobs": false
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -1773,129 +1774,6 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('workspaceName'), '/Notebook 2')]",
-			"type": "Microsoft.Synapse/workspaces/notebooks",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"nbformat": 4,
-				"nbformat_minor": 2,
-				"bigDataPool": {
-					"referenceName": "sparkpool",
-					"type": "BigDataPoolReference"
-				},
-				"sessionProperties": {
-					"driverMemory": "28g",
-					"driverCores": 4,
-					"executorMemory": "28g",
-					"executorCores": 4,
-					"numExecutors": 2,
-					"conf": {
-						"spark.dynamicAllocation.enabled": "false",
-						"spark.dynamicAllocation.minExecutors": "2",
-						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "30372132-cdae-42dd-b19d-dfb359a5c9ff"
-					}
-				},
-				"metadata": {
-					"saveOutput": true,
-					"enableDebugMode": false,
-					"kernelspec": {
-						"name": "synapse_pyspark",
-						"display_name": "Synapse PySpark"
-					},
-					"language_info": {
-						"name": "python"
-					},
-					"a365ComputeOptions": {
-						"id": "/subscriptions/89c37dd8-94bb-4870-98e0-1cfb98c0262e/resourceGroups/openhack_data_analytics/providers/Microsoft.Synapse/workspaces/opnhckdasynapsews/bigDataPools/sparkpool",
-						"name": "sparkpool",
-						"type": "Spark",
-						"endpoint": "https://opnhckdasynapsews.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sparkpool",
-						"auth": {
-							"type": "AAD",
-							"authResource": "https://dev.azuresynapse.net"
-						},
-						"sparkVersion": "3.1",
-						"nodeCount": 10,
-						"cores": 4,
-						"memory": 28
-					},
-					"sessionKeepAliveTimeout": 30
-				},
-				"cells": [
-					{
-						"cell_type": "code",
-						"metadata": {
-							"microsoft": {
-								"language": "python"
-							}
-						},
-						"source": [
-							"%%pyspark\n",
-							"blob_account_name = \"opnhckstorage\"\n",
-							"blob_container_name = \"streamanalyticsoutput\"\n",
-							"from pyspark.sql import SparkSession\n",
-							"\n",
-							"sc = SparkSession.builder.getOrCreate()\n",
-							"token_library = sc._jvm.com.microsoft.azure.synapse.tokenlibrary.TokenLibrary\n",
-							"blob_sas_token = token_library.getConnectionString(\"ls_stream_eh_blob\")\n",
-							"\n",
-							"spark.conf.set(\n",
-							"    'fs.azure.sas.%s.%s.blob.core.windows.net' % (blob_container_name, blob_account_name),\n",
-							"    blob_sas_token)\n",
-							""
-						],
-						"outputs": [],
-						"execution_count": 2
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"jupyter": {
-								"source_hidden": false,
-								"outputs_hidden": false
-							},
-							"nteract": {
-								"transient": {
-									"deleting": false
-								}
-							},
-							"collapsed": false
-						},
-						"source": [
-							"df = spark.read.load('wasbs://streamanalyticsoutput@opnhckstorage.blob.core.windows.net/2026390744_468749de2e094791add867a698517d69_1.csv', format='csv'\r\n",
-							"## If header exists uncomment line below\r\n",
-							", header=True\r\n",
-							")\r\n",
-							"display(df.limit(10))"
-						],
-						"outputs": [],
-						"execution_count": 4
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"jupyter": {
-								"source_hidden": false,
-								"outputs_hidden": false
-							},
-							"nteract": {
-								"transient": {
-									"deleting": false
-								}
-							}
-						},
-						"source": [
-							""
-						],
-						"outputs": [],
-						"execution_count": null
-					}
-				]
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('workspaceName'), '/Raw_To_Curated_Full_Load')]",
 			"type": "Microsoft.Synapse/workspaces/notebooks",
 			"apiVersion": "2019-06-01-preview",
@@ -1916,7 +1794,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "0fc7b48c-65c6-4df5-888f-8753a2a0f930"
+						"spark.autotune.trackingId": "1c0a749a-1671-4281-8cca-fe5a93de7ec9"
 					}
 				},
 				"metadata": {
@@ -1941,7 +1819,8 @@
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 4,
-						"memory": 28
+						"memory": 28,
+						"automaticScaleJobs": false
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -2689,7 +2568,7 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('workspaceName'), '/streaming_usecase')]",
+			"name": "[concat(parameters('workspaceName'), '/streaming_usecase_using_eh_capture')]",
 			"type": "Microsoft.Synapse/workspaces/notebooks",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
@@ -2709,7 +2588,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "cafa51a7-ccc0-483c-acd3-d0774409c136"
+						"spark.autotune.trackingId": "b8f04295-9f44-4d9e-a4af-a2d43b803d82"
 					}
 				},
 				"metadata": {
@@ -2734,7 +2613,8 @@
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 4,
-						"memory": 28
+						"memory": 28,
+						"automaticScaleJobs": false
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -2760,6 +2640,19 @@
 						],
 						"outputs": [],
 						"execution_count": 2
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"#### this notebook takes the filename from the ADF trigger and then append the content in the delta table."
+						]
 					},
 					{
 						"cell_type": "code",
@@ -2980,6 +2873,337 @@
 			},
 			"dependsOn": [],
 			"location": "eastus"
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/spark_structured_streaming_in_synapse')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"nbformat": 4,
+				"nbformat_minor": 2,
+				"bigDataPool": {
+					"referenceName": "sparkpool",
+					"type": "BigDataPoolReference"
+				},
+				"sessionProperties": {
+					"driverMemory": "28g",
+					"driverCores": 4,
+					"executorMemory": "28g",
+					"executorCores": 4,
+					"numExecutors": 2,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2",
+						"spark.autotune.trackingId": "7527e168-a0ff-449b-aba7-6ea5ef094dbf"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"enableDebugMode": false,
+					"kernelspec": {
+						"name": "synapse_pyspark",
+						"display_name": "Synapse PySpark"
+					},
+					"language_info": {
+						"name": "python"
+					},
+					"a365ComputeOptions": {
+						"id": "/subscriptions/89c37dd8-94bb-4870-98e0-1cfb98c0262e/resourceGroups/openhack_data_analytics/providers/Microsoft.Synapse/workspaces/opnhckdasynapsews/bigDataPools/sparkpool",
+						"name": "sparkpool",
+						"type": "Spark",
+						"endpoint": "https://opnhckdasynapsews.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sparkpool",
+						"auth": {
+							"type": "AAD",
+							"authResource": "https://dev.azuresynapse.net"
+						},
+						"sparkVersion": "3.1",
+						"nodeCount": 10,
+						"cores": 4,
+						"memory": 28,
+						"automaticScaleJobs": false
+					},
+					"sessionKeepAliveTimeout": 30
+				},
+				"cells": [
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							" ### Read  the connection string from the keyVault using the linked service that is already created "
+						]
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							""
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"eh_conn_str = mssparkutils.credentials.getSecretWithLS(\"LS_AKV\", \"connstrehsynapsestreaming\")"
+						],
+						"outputs": [],
+						"execution_count": 5
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							" ### Variable declaration"
+						],
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"\r\n",
+							"table_delta_file_location = f\"abfss://curated@opnhckadlstorage.dfs.core.windows.net/streaming/spark_structured_streaming_using_synapse/structured_streaming_eh\"\r\n",
+							"checkpointLocation = f\"abfss://curated@opnhckadlstorage.dfs.core.windows.net/streaming/spark_structured_streaming_using_synapse/_checkcpoint/structured_streaming_eh\""
+						],
+						"outputs": [],
+						"execution_count": 6
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"connectionString = eh_conn_str\r\n",
+							"ehConf = {\r\n",
+							"  'eventhubs.connectionString' : sc._jvm.org.apache.spark.eventhubs.EventHubsUtils.encrypt(connectionString)\r\n",
+							"}\r\n",
+							"def write2table(df2, epoch_id):\r\n",
+							"    df2.write.format(\"delta\").mode(\"append\").save(f\"abfss://curated@opnhckadlstorage.dfs.core.windows.net/streaming/spark_structured_streaming_using_synapse/structured_streaming_eh\")\r\n",
+							"\r\n",
+							""
+						],
+						"outputs": [],
+						"execution_count": 7
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"# read the stream data"
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"df = spark \\\r\n",
+							"    .readStream \\\r\n",
+							"    .format(\"eventhubs\") \\\r\n",
+							"    .options(**ehConf) \\\r\n",
+							"  .load()"
+						],
+						"outputs": [],
+						"execution_count": 8
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"# transformation"
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"df1 = df.withColumn(\"body\", df[\"body\"].cast(\"string\"))"
+						],
+						"outputs": [],
+						"execution_count": 9
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"# write down the stream data into the delta table."
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"df1.writeStream \\\r\n",
+							"    .outputMode(\"update\") \\\r\n",
+							"    .trigger(processingTime='5 seconds') \\\r\n",
+							"    .option(\"checkpointLocation\",checkpointLocation) \\\r\n",
+							"    .foreachBatch(write2table) \\\r\n",
+							"    .start() \\\r\n",
+							"    .awaitTermination()"
+						],
+						"outputs": [],
+						"execution_count": 10
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"# mssparkutils.fs.rm(\"abfss://curated@opnhckadlstorage.dfs.core.windows.net/streaming/spark_structured_streaming_using_synapse/structured_streaming_eh\", recurse=True)"
+						],
+						"outputs": [],
+						"execution_count": 11
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							""
+						],
+						"outputs": [],
+						"execution_count": null
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/misc')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "\nSELECT\n     count(*)\nFROM\n    OPENROWSET(\n        BULK 'https://opnhckadlstorage.dfs.core.windows.net/curated/streaming/spark_structured_streaming_using_synapse/structured_streaming_eh/',\n        FORMAT = 'DELTA'\n    ) AS [result]",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "master",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
 		}
 	]
 }
