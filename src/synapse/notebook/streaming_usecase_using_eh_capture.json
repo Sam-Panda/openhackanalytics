@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "4859948a-9d69-4598-af28-c3a82d9eeea4"
+				"spark.autotune.trackingId": "0fba499d-b25f-4eed-8065-28d6cfcb1db6"
 			}
 		},
 		"metadata": {
@@ -68,6 +68,19 @@
 					"file_name = \"\""
 				],
 				"execution_count": 2
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"#### this notebook takes the filename from the ADF trigger and then append the content in the delta table."
+				]
 			},
 			{
 				"cell_type": "code",
