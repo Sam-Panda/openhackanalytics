@@ -1,5 +1,5 @@
 {
-	"name": "streaming_usecase",
+	"name": "streaming_usecase_using_eh_capture",
 	"properties": {
 		"nbformat": 4,
 		"nbformat_minor": 2,
@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "cafa51a7-ccc0-483c-acd3-d0774409c136"
+				"spark.autotune.trackingId": "4859948a-9d69-4598-af28-c3a82d9eeea4"
 			}
 		},
 		"metadata": {
