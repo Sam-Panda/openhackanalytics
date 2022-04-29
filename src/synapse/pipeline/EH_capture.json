@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"notebook": {
-						"referenceName": "streaming_usecase",
+						"referenceName": "streaming_usecase_using_eh_capture",
 						"type": "NotebookReference"
 					},
 					"parameters": {
