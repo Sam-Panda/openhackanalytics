@@ -5,6 +5,9 @@
 		"workspaceName": {
 			"value": "opnhckdasynapsews"
 		},
+		"TEST_LS_SQL_MI_connectionString": {
+			"value": ""
+		},
 		"ls_stream_eh_blob_connectionString": {
 			"value": ""
 		},
