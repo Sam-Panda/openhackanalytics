@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "b7bef728-e480-44d0-ad90-c2c84b33d385"
+				"spark.autotune.trackingId": "e2ad9b15-27c5-45b6-a406-25c78e5f50a5"
 			}
 		},
 		"metadata": {
@@ -99,10 +99,21 @@
 						"transient": {
 							"deleting": false
 						}
+					},
+					"microsoft": {
+						"language": "python"
 					}
 				},
 				"source": [
-					""
+					"%%pyspark\r\n",
+					"# retrieve connectionstring from TokenLibrary\r\n",
+					"\r\n",
+					"from pyspark.sql import SparkSession\r\n",
+					"\r\n",
+					"sc = SparkSession.builder.getOrCreate()\r\n",
+					"token_library = sc._jvm.com.microsoft.azure.synapse.tokenlibrary.TokenLibrary\r\n",
+					"connection_string = token_library.getConnectionString(\"<LINKED SERVICE NAME>\")\r\n",
+					"print(connection_string)"
 				],
 				"execution_count": null
 			}
