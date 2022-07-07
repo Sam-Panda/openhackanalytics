@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "e2ad9b15-27c5-45b6-a406-25c78e5f50a5"
+				"spark.autotune.trackingId": "41869ab2-2ba1-4351-8a45-1cb9497bfaef"
 			}
 		},
 		"metadata": {
@@ -112,8 +112,26 @@
 					"\r\n",
 					"sc = SparkSession.builder.getOrCreate()\r\n",
 					"token_library = sc._jvm.com.microsoft.azure.synapse.tokenlibrary.TokenLibrary\r\n",
-					"connection_string = token_library.getConnectionString(\"<LINKED SERVICE NAME>\")\r\n",
+					"connection_string = token_library.getConnectionString(\"TEST_LS_SQL_MI\")\r\n",
 					"print(connection_string)"
+				],
+				"execution_count": 2
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					""
 				],
 				"execution_count": null
 			}
