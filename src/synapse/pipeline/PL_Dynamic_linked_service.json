@@ -75,6 +75,10 @@
 										"dataset_param_username": {
 											"value": "@{item().username}",
 											"type": "Expression"
+										},
+										"dataset_param_keyvaultsecretname": {
+											"value": "@{item().keyvaultsecretname}",
+											"type": "Expression"
 										}
 									}
 								}
