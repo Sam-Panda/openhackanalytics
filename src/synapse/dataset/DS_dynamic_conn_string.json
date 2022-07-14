@@ -16,6 +16,10 @@
 				"username": {
 					"value": "@dataset().dataset_param_username",
 					"type": "Expression"
+				},
+				"ls_param_secret_name": {
+					"value": "@dataset().dataset_param_keyvaultsecretname",
+					"type": "Expression"
 				}
 			}
 		},
@@ -33,6 +37,9 @@
 				"type": "String"
 			},
 			"dataset_param_username": {
+				"type": "String"
+			},
+			"dataset_param_keyvaultsecretname": {
 				"type": "String"
 			}
 		},
