@@ -3,10 +3,33 @@
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "LS_dynamic_conn_string",
-			"type": "LinkedServiceReference"
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"param_server_name": "NA",
+				"database_name": "NADB",
+				"username": "NA"
+			}
+		},
+		"parameters": {
+			"param_dataset_schemaname": {
+				"type": "String"
+			},
+			"dataset_param_tablename": {
+				"type": "String"
+			}
 		},
 		"annotations": [],
 		"type": "AzureSqlTable",
-		"schema": []
+		"schema": [],
+		"typeProperties": {
+			"schema": {
+				"value": "@dataset().param_dataset_schemaname",
+				"type": "Expression"
+			},
+			"table": {
+				"value": "@dataset().dataset_param_tablename",
+				"type": "Expression"
+			}
+		}
 	}
 }
