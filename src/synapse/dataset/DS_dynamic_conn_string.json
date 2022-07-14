@@ -5,9 +5,18 @@
 			"referenceName": "LS_dynamic_conn_string",
 			"type": "LinkedServiceReference",
 			"parameters": {
-				"param_server_name": "NA",
-				"database_name": "NADB",
-				"username": "NA"
+				"param_server_name": {
+					"value": "@dataset().dataset_param_server_name",
+					"type": "Expression"
+				},
+				"database_name": {
+					"value": "@dataset().dataset_param_database_name",
+					"type": "Expression"
+				},
+				"username": {
+					"value": "@dataset().dataset_param_username",
+					"type": "Expression"
+				}
 			}
 		},
 		"parameters": {
@@ -15,6 +24,15 @@
 				"type": "String"
 			},
 			"dataset_param_tablename": {
+				"type": "String"
+			},
+			"dataset_param_server_name": {
+				"type": "String"
+			},
+			"dataset_param_database_name": {
+				"type": "String"
+			},
+			"dataset_param_username": {
 				"type": "String"
 			}
 		},
