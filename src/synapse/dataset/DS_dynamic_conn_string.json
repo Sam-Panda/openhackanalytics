@@ -1,0 +1,12 @@
+{
+	"name": "DS_dynamic_conn_string",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_dynamic_conn_string",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": []
+	}
+}
