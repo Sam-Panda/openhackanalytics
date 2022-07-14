@@ -38,12 +38,61 @@
 									"queryTimeout": "02:00:00",
 									"partitionOption": "None"
 								},
+								"sink": {
+									"type": "DelimitedTextSink",
+									"storeSettings": {
+										"type": "AzureBlobStorageWriteSettings"
+									},
+									"formatSettings": {
+										"type": "DelimitedTextWriteSettings",
+										"quoteAllText": true,
+										"fileExtension": ".txt"
+									}
+								},
 								"enableStaging": false
 							},
 							"inputs": [
 								{
 									"referenceName": "DS_dynamic_conn_string",
-									"type": "DatasetReference"
+									"type": "DatasetReference",
+									"parameters": {
+										"param_dataset_schemaname": {
+											"value": "@{item().schemaname}",
+											"type": "Expression"
+										},
+										"dataset_param_tablename": {
+											"value": "@{item().tablename}",
+											"type": "Expression"
+										},
+										"dataset_param_server_name": {
+											"value": "@{item().servername}",
+											"type": "Expression"
+										},
+										"dataset_param_database_name": {
+											"value": "@{item().databasename}",
+											"type": "Expression"
+										},
+										"dataset_param_username": {
+											"value": "@{item().username}",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "DS_staging_csv",
+									"type": "DatasetReference",
+									"parameters": {
+										"directoryname": {
+											"value": "@{item().servername}.@{item().databasename}",
+											"type": "Expression"
+										},
+										"filename": {
+											"value": "@{item().schemaname}.@{item().tablename}.csv",
+											"type": "Expression"
+										}
+									}
 								}
 							]
 						}
