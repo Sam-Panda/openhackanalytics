@@ -5,6 +5,9 @@
 		"workspaceName": {
 			"value": "opnhckdasynapsews"
 		},
+		"LS_dynamic_conn_string_connectionString": {
+			"value": ""
+		},
 		"TEST_LS_SQL_MI_connectionString": {
 			"value": ""
 		},

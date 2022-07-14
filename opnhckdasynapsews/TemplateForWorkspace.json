@@ -7,6 +7,10 @@
 			"metadata": "Workspace name",
 			"defaultValue": "opnhckdasynapsews"
 		},
+		"LS_dynamic_conn_string_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LS_dynamic_conn_string'"
+		},
 		"TEST_LS_SQL_MI_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'TEST_LS_SQL_MI'"
@@ -388,6 +392,155 @@
 				"[concat(variables('workspaceId'), '/datasets/DS_metadata')]",
 				"[concat(variables('workspaceId'), '/notebooks/Raw_To_Curated_Incremental_Load')]",
 				"[concat(variables('workspaceId'), '/bigDataPools/sparkpool')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/PL_Dynamic_linked_service')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "ForEach1",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "Lookup_metadata",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('Lookup_metadata').output.value",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "Copy data1",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "AzureSqlSource",
+											"queryTimeout": "02:00:00",
+											"partitionOption": "None"
+										},
+										"sink": {
+											"type": "DelimitedTextSink",
+											"storeSettings": {
+												"type": "AzureBlobStorageWriteSettings"
+											},
+											"formatSettings": {
+												"type": "DelimitedTextWriteSettings",
+												"quoteAllText": true,
+												"fileExtension": ".txt"
+											}
+										},
+										"enableStaging": false
+									},
+									"inputs": [
+										{
+											"referenceName": "DS_dynamic_conn_string",
+											"type": "DatasetReference",
+											"parameters": {
+												"param_dataset_schemaname": {
+													"value": "@{item().schemaname}",
+													"type": "Expression"
+												},
+												"dataset_param_tablename": {
+													"value": "@{item().tablename}",
+													"type": "Expression"
+												},
+												"dataset_param_server_name": {
+													"value": "@{item().servername}",
+													"type": "Expression"
+												},
+												"dataset_param_database_name": {
+													"value": "@{item().databasename}",
+													"type": "Expression"
+												},
+												"dataset_param_username": {
+													"value": "@{item().username}",
+													"type": "Expression"
+												},
+												"dataset_param_keyvaultsecretname": {
+													"value": "@{item().keyvaultsecretname}",
+													"type": "Expression"
+												}
+											}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "DS_staging_csv",
+											"type": "DatasetReference",
+											"parameters": {
+												"directoryname": {
+													"value": "@{item().servername}.@{item().databasename}",
+													"type": "Expression"
+												},
+												"filename": {
+													"value": "@{item().schemaname}.@{item().tablename}.csv",
+													"type": "Expression"
+												}
+											}
+										}
+									]
+								}
+							]
+						}
+					},
+					{
+						"name": "Lookup_metadata",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "DS_dynamic_linked_service_metadata",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"firstRowOnly": false
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "Misc"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/datasets/DS_dynamic_linked_service_metadata')]",
+				"[concat(variables('workspaceId'), '/datasets/DS_dynamic_conn_string')]",
+				"[concat(variables('workspaceId'), '/datasets/DS_staging_csv')]"
 			]
 		},
 		{
@@ -1834,6 +1987,110 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/DS_dynamic_conn_string')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_dynamic_conn_string",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"param_server_name": {
+							"value": "@dataset().dataset_param_server_name",
+							"type": "Expression"
+						},
+						"database_name": {
+							"value": "@dataset().dataset_param_database_name",
+							"type": "Expression"
+						},
+						"username": {
+							"value": "@dataset().dataset_param_username",
+							"type": "Expression"
+						},
+						"ls_param_secret_name": {
+							"value": "@dataset().dataset_param_keyvaultsecretname",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"param_dataset_schemaname": {
+						"type": "String"
+					},
+					"dataset_param_tablename": {
+						"type": "String"
+					},
+					"dataset_param_server_name": {
+						"type": "String"
+					},
+					"dataset_param_database_name": {
+						"type": "String"
+					},
+					"dataset_param_username": {
+						"type": "String"
+					},
+					"dataset_param_keyvaultsecretname": {
+						"type": "String"
+					}
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": {
+						"value": "@dataset().param_dataset_schemaname",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().dataset_param_tablename",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/LS_dynamic_conn_string')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/DS_dynamic_linked_service_metadata')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_metadataDB",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "id",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "servername",
+						"type": "varchar"
+					},
+					{
+						"name": "databasename",
+						"type": "varchar"
+					},
+					{
+						"name": "tablename",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "tbl_connectionstrings"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/LS_metadataDB')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/DS_metadata')]",
 			"type": "Microsoft.Synapse/workspaces/datasets",
 			"apiVersion": "2019-06-01-preview",
@@ -2192,6 +2449,54 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/LS_dynamic_conn_string')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"parameters": {
+					"param_server_name": {
+						"type": "String",
+						"defaultValue": "NA"
+					},
+					"database_name": {
+						"type": "String",
+						"defaultValue": "NADB"
+					},
+					"username": {
+						"type": "String",
+						"defaultValue": "NA"
+					},
+					"ls_param_secret_name": {
+						"type": "String"
+					}
+				},
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('LS_dynamic_conn_string_connectionString')]",
+					"password": {
+						"type": "AzureKeyVaultSecret",
+						"store": {
+							"referenceName": "LS_AKV",
+							"type": "LinkedServiceReference"
+						},
+						"secretName": {
+							"value": "@linkedService().ls_param_secret_name",
+							"type": "Expression"
+						}
+					}
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]",
+				"[concat(variables('workspaceId'), '/linkedServices/LS_AKV')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/LS_metadataDB')]",
 			"type": "Microsoft.Synapse/workspaces/linkedServices",
 			"apiVersion": "2019-06-01-preview",
@@ -2422,7 +2727,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "27d530d5-490e-42bd-ab2e-05b85d6cf7df"
+						"spark.autotune.trackingId": "41869ab2-2ba1-4351-8a45-1cb9497bfaef"
 					}
 				},
 				"metadata": {
@@ -2447,8 +2752,7 @@
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 4,
-						"memory": 28,
-						"automaticScaleJobs": false
+						"memory": 28
 					},
 					"sessionKeepAliveTimeout": 30
 				},
